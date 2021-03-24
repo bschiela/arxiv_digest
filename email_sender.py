@@ -25,12 +25,10 @@ def send_email(results):
     msg.attach(MIMEText(body, 'html'))
 
     try:
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        context = ssl.create_default_context()
-        server.starttls(context=context)
-        server.login(defaults['from_email'], defaults['pw'])
-        server.send_message(msg)
-        server.quit()
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls(context=ssl.create_default_context())
+            server.login(defaults['from_email'], defaults['pw'])
+            server.send_message(msg)
     except Exception as e:
         logger.exception(e)
 
