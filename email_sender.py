@@ -31,6 +31,7 @@ def send_email(results):
             server.send_message(msg)
     except Exception as e:
         logger.exception(e)
+        raise e
 
 def build_body(results):
     """Construct raw HTML of the email body."""
