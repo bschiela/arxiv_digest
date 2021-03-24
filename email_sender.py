@@ -37,17 +37,17 @@ def build_body(results):
     body = "<html><body>"
     for section in results:
         body += "<section>"
-        body += f"<hr><h1>{section}</h1><hr>"
+        body += f"<hr><h2>{section}</h2><hr>"
         for author in results[section]:
             for paper in results[section][author]:
-                body += f"<h2>{paper['title']}</h2>"
+                body += f"<h3>{paper['title']}</h3>"
                 body += f"<p>{', '.join(paper['authors'])}</p>"
                 submitted = paper['published_parsed']
                 updated = paper['updated_parsed']
                 if submitted == updated:
-                    body += f"<p>submitted: {strftime('%A %b %d, %Y', submitted)}</p>"
+                    body += f"<p><i>submitted: {strftime('%a %b %d, %Y', submitted)}</i></p>"
                 else:
-                    body += f"<p>updated: {strftime('%A %b %d, %Y', updated)} (submitted: {strftime('%b %d, %Y', submitted)})</p>"
+                    body += f"<p><i>updated: {strftime('%a %b %d, %Y', updated)} (submitted: {strftime('%b %d, %Y', submitted)})</i></p>"
                 body += f"<a href={paper['arxiv_url']}>{'/'.join(paper['arxiv_url'].split('/')[-2:])}</a> (<a href={paper['pdf_url']}>pdf</a>)"
                 body += f"<p><b>abstract:</b> {paper['summary']}</p>"
         body += "</section>"
