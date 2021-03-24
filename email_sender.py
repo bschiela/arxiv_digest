@@ -1,7 +1,10 @@
+import logging
 import smtplib
 import ssl
 from configparser import ConfigParser
 from email.message import EmailMessage
+
+logger = logging.getLogger(__name__)
 
 config = ConfigParser()
 config.read('creds.ini')

@@ -5,8 +5,9 @@ import arxiv
 
 from query_builder import build_author_query
 
-logging.basicConfig(filename='info.log', level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logging.info('Checking arXiv...')
+logging.basicConfig(filename='info.log', level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logger = logging.getLogger(__name__)
+logger.info('Checking arXiv...')
 
 config = ConfigParser(allow_no_value=True)
 config.read('config.ini')
@@ -23,5 +24,4 @@ for section in config.sections():
                     sort_order="descending"
                 )
         )
-        
-logging.info('...done.')
+logger.info('...done.')
