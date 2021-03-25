@@ -12,28 +12,30 @@ from time import strftime
 logger = logging.getLogger(__name__)
 
 config = ConfigParser()
-config.read(os.path.join(sys.path[0], 'creds.ini'))
+config.read(os.path.join(sys.path[0], "creds.ini"))
 defaults = config.defaults()
+
 
 def send_email(results):
     msg = MIMEMultipart("alternative")
-    msg['Subject'] = 'arXiv digest'
-    msg['From'] = defaults['from_email']
-    msg['To'] = defaults['to_email']
+    msg["Subject"] = "arXiv digest"
+    msg["From"] = defaults["from_email"]
+    msg["To"] = defaults["to_email"]
 
     body = build_body(results)
     # client should attempt to render the last part first
-    msg.attach(MIMEText(body, 'plain'))
-    msg.attach(MIMEText(body, 'html'))
+    msg.attach(MIMEText(body, "plain"))
+    msg.attach(MIMEText(body, "html"))
 
     try:
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls(context=ssl.create_default_context())
-            server.login(defaults['from_email'], defaults['pw'])
+            server.login(defaults["from_email"], defaults["pw"])
             server.send_message(msg)
     except Exception as e:
         logger.exception(e)
         raise e
+
 
 def build_body(results):
     """Construct raw HTML of the email body."""
@@ -45,8 +47,8 @@ def build_body(results):
             for paper in results[section][author]:
                 body += f"<h3>{paper['title']}</h3>"
                 body += f"<p>{', '.join(paper['authors'])}</p>"
-                submitted = paper['published_parsed']
-                updated = paper['updated_parsed']
+                submitted = paper["published_parsed"]
+                updated = paper["updated_parsed"]
                 if submitted == updated:
                     body += f"<p><i>submitted: {strftime('%a %b %d, %Y', submitted)}</i></p>"
                 else:
