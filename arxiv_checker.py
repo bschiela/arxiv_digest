@@ -38,7 +38,7 @@ try:
         for author in config[section].keys():
             # arxiv returns times in UTC, timegm converts UTC to seconds since the epoch,
             # and fromtimestamp converts seconds since the epoch to a local datetime
-            results[section][author] = [paper for paper in arxiv.query(query=build_author_query(author), max_results=1, sort_by="lastUpdatedDate", sort_order="descending") if datetime.fromtimestamp(timegm(paper['updated_parsed'])) >= last_digest]
+            results[section][author] = [paper for paper in arxiv.query(query=build_author_query(author), max_results=5, sort_by="lastUpdatedDate", sort_order="descending") if datetime.fromtimestamp(timegm(paper['updated_parsed'])) >= last_digest]
 except Exception as e:
     logger.exception(e)
     logger.error("...abort: a query failed")
@@ -58,13 +58,10 @@ try:
     db['DEFAULT']['last digest'] = str(now.timestamp())
     with open(os.path.join(sys.path[0], 'database.ini'), 'w') as dbfile:
         db.write(dbfile)
+    logger.info('...last digest time updated')
 except Exception as e:
     logger.exception(e)
     logger.error('...abort: failed to update last digest time')
     sys.exit()
-
-# TODO limit future queries after last digest time
-# TODO increase max_results
-# run periodically...
 
 logger.info('...done.')
