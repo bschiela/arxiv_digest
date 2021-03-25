@@ -1,6 +1,8 @@
 import logging
+import os
 import smtplib
 import ssl
+import sys
 from configparser import ConfigParser
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
@@ -10,7 +12,7 @@ from time import strftime
 logger = logging.getLogger(__name__)
 
 config = ConfigParser()
-config.read('creds.ini')
+config.read(os.path.join(sys.path[0], 'creds.ini'))
 defaults = config.defaults()
 
 def send_email(results):

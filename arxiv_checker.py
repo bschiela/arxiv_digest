@@ -1,8 +1,11 @@
+#! /usr/bin/python3
+
 import logging
+import os
+import sys
 from configparser import ConfigParser
 from datetime import timedelta, datetime
 from calendar import timegm
-from sys import exit
 
 import arxiv
 
@@ -10,23 +13,23 @@ from query_builder import build_author_query
 from email_sender import send_email
 
 
-logging.basicConfig(filename='info.log', level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+logging.basicConfig(filename=os.path.join(sys.path[0], 'info.log'), level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 db = ConfigParser()
-db.read('database.ini')
+db.read(os.path.join(sys.path[0], 'database.ini'))
 last_digest = datetime.fromtimestamp(float(db['DEFAULT']['last digest']))
 now = datetime.now()
 # send a digest once every Monday, or after 1 week has elapsed
 if last_digest.date() == now.date():
     logger.info(f"Abort: already sent a digest today")
-    exit()
+    sys.exit()
 if now.weekday() != 0 and now - last_digest < timedelta(weeks=1):
     logger.info("Abort: it's not Monday, and it's been less than a week since last digest")
-    exit()
+    sys.exit()
 
 config = ConfigParser(allow_no_value=True)
-config.read('config.ini')
+config.read(os.path.join(sys.path[0], 'config.ini'))
 results = {}
 logger.info('Checking arXiv...')
 try:
@@ -39,7 +42,7 @@ try:
 except Exception as e:
     logger.exception(e)
     logger.error("...abort: a query failed")
-    exit()
+    sys.exit()
 
 if not all([len(results[section][author]) == 0 for section in results for author in results[section]]):
     try:
@@ -47,16 +50,18 @@ if not all([len(results[section][author]) == 0 for section in results for author
         logger.info('...email sent')
     except:
         logger.error('...abort: failed to send email.')
-        exit()
+        sys.exit()
+else:
+    logger.info('...no new papers')
 
 try:
     db['DEFAULT']['last digest'] = str(now.timestamp())
-    with open('database.ini', 'w') as dbfile:
+    with open(os.path.join(sys.path[0], 'database.ini'), 'w') as dbfile:
         db.write(dbfile)
 except Exception as e:
     logger.exception(e)
     logger.error('...abort: failed to update last digest time')
-    exit()
+    sys.exit()
 
 # TODO limit future queries after last digest time
 # TODO increase max_results
