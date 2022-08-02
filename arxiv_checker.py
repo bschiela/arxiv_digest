@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 import arxiv
 
-from email_sender import send_email
+from email_sender import write_local_digest
 from query_builder import build_author_query
 
 logging.basicConfig(
@@ -67,10 +67,10 @@ if not all(
     ]
 ):
     try:
-        send_email(results)
-        logger.info("...email sent")
+        write_local_digest(results)
+        logger.info("...wrote local digest")
     except:
-        logger.error("...abort: failed to send email.")
+        logger.error("...abort: failed to write local digest.")
         sys.exit()
 else:
     logger.info("...no new papers")

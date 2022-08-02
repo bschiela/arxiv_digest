@@ -7,6 +7,7 @@ from configparser import ConfigParser
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from pathlib import Path
 from time import strftime
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,17 @@ logger = logging.getLogger(__name__)
 config = ConfigParser()
 config.read(os.path.join(sys.path[0], "creds.ini"))
 defaults = config.defaults()
+
+
+def write_local_digest(results):
+    body = build_body(results)
+    num = 1
+    path = Path(f"~/downloads/arxiv-digest-{num}.html").expanduser()
+    while path.exists():
+        num += 1
+        path = Path(f"~/downloads/arxiv-digest-{num}.html").expanduser()
+    with path.open(mode="w") as f:
+        f.write(body)
 
 
 def send_email(results):
